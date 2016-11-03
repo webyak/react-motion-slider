@@ -32,6 +32,7 @@ class Slider extends Component {
     beforeSlide: PropTypes.func,
     afterSlide: PropTypes.func,
     onClick: PropTypes.func,
+    onTouchMove: PropTypes.func,
   }
 
   static defaultProps = {
@@ -52,6 +53,7 @@ class Slider extends Component {
     beforeSlide: () => null,
     afterSlide: () => null,
     onClick: () => null,
+    onTouchMove: () => null,
   }
 
   constructor(props) {
@@ -285,6 +287,9 @@ class Slider extends Component {
   _onSwipeMove = (e) =>  {
     // bail if we aren't swiping
     if (!this._isSwiping) return
+
+    // call back prop event handler.
+    this.props.onTouchMove(e);
 
     const { vertical, swipeThreshold, slidesToMove } = this.props
     const swipe = e.touches && e.touches[0] || e
