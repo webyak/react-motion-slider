@@ -30,7 +30,8 @@ class Slider extends Component {
     flickTimeout: PropTypes.number,
     springConfig: React.PropTypes.objectOf(React.PropTypes.number),
     beforeSlide: PropTypes.func,
-    afterSlide: PropTypes.func
+    afterSlide: PropTypes.func,
+    onClick: PropTypes.func,
   }
 
   static defaultProps = {
@@ -49,12 +50,13 @@ class Slider extends Component {
     springConfig: presets.noWobble,
     onChange: () => null,
     beforeSlide: () => null,
-    afterSlide: () => null
+    afterSlide: () => null,
+    onClick: () => null,
   }
 
   constructor(props) {
     super(props)
-    
+
     this._node = null
     this._sliderWidth = 0
     this._slideCount = Children.count(props.children)
@@ -407,7 +409,7 @@ class Slider extends Component {
   }
 
   render() {
-    const { children, springConfig, autoHeight, infinite } = this.props
+    const { children, springConfig, autoHeight, infinite, onClick } = this.props
     const { currentIndex, lastIndex, height } = this.state
     const instant = this.props.instant || this.state.instant
     const destValue = this._getDestValue()
@@ -431,6 +433,7 @@ class Slider extends Component {
                   height: autoHeight && wrapperHeight,
                   [TRANSFORM]: `translate3d(${translate}%, 0, 0)`
                 }}
+                onClick={onClick}
                 {...this._getSwipeEvents()}
               >
                 {Children.map(children, (child, index) => {
