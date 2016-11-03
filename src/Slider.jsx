@@ -266,6 +266,8 @@ class Slider extends Component {
   _onSwipeStart = (e) => {
     const swipe = e.touches && e.touches[0] || e
 
+    this._isScrolling = undefined;
+
     // we're now swiping
     this._isSwiping = true
 
@@ -288,15 +290,35 @@ class Slider extends Component {
     // bail if we aren't swiping
     if (!this._isSwiping) return
 
+    const { vertical, swipeThreshold, slidesToMove } = this.props
+    const swipe = e.touches && e.touches[0] || e
+    const { pageY, pageX } = swipe;
+
+    if (typeof this._isScrolling === 'undefined') {
+      if (!vertical && pageY === this._startY || vertical && pageX !== this._startX) {
+        this._isScrolling = false
+      } else {
+        const touchAngle = Math.atan2(
+          Math.abs(pageY - this._startY), Math.abs(pageX - this._startX)
+        ) * 180 / Math.PI
+
+        this._isScrolling = vertical
+          ? (90 - touchAngle > 45)
+          : touchAngle > 45
+      }
+    }
+
+    if (this._isScrolling) {
+      this._isSwiping = false
+      return
+    }
+
     // call back prop event handler.
     this.props.onTouchMove(e);
 
-    const { vertical, swipeThreshold, slidesToMove } = this.props
-    const swipe = e.touches && e.touches[0] || e
-
     // determine how much we have moved
-    this._deltaX = this._startX - swipe.pageX
-    this._deltaY = this._startY - swipe.pageY
+    this._deltaX = this._startX - pageX
+    this._deltaY = this._startY - pageY
 
     if (this._isSwipe(swipeThreshold)) {
       e.preventDefault()
